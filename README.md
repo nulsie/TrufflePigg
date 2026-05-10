@@ -17,7 +17,7 @@
 
 **Version:** 1.0 - Ready for sniffing.
 
-TrufflePigg is a monolithic, all-in-one reconnaissance, fuzzing, and OSINT tool built in Node.js for domain and server(where the domain is hosted) analysis. It's designed to act as a Swiss Army knife for bug bounty hunters and penetration testers. It doesn't just scan ports; it sniffs out high-fidelity secrets, hunts for shadow-trust dependency takeovers, bypasses WAFs using HTTP/2 and Client Hints, and crawls deep into the application structure.
+TrufflePigg is an all-in-one reconnaissance, fuzzing, and OSINT tool built in Node.js for domain and server(where the domain is hosted) analysis. It's designed to act as a Swiss Army knife for bug bounty hunters and penetration testers. It doesn't just scan ports; it sniffs out high-fidelity secrets, hunts for shadow-trust dependency takeovers, bypasses WAFs using HTTP/2 and Client Hints, and crawls deep into the application structure.
 
 **Disclaimer:** *Of course this tool is for educational purposes and authorized security testing only. Don't point the pig at infrastructure you don't own or don't have explicit permission to test. And I(the author) is not to be held accountable for any damage caused by this tool.*
 
@@ -199,10 +199,6 @@ trufflepigg
 ./TrufflePigg.js --mode infra --ports 21,22,25,445,3306,6379
 
 ```
-
-## Note:
-
-* **It's a Monolith:** Currently, the entire script lives in a single 3,187 line file.
 
 -----
 
