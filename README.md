@@ -69,6 +69,7 @@ async function getBaseline(host, port, basePath, protocol) {
 }
 
 ```
+* **Sensitive File Extraction:** If the tool finds sensitive files like `.env` or `config.php` exposed, it will facilitate the extraction of these files to the user's machine if the user gives consent. 
 * **Breadcrumb Crawling:** Instead of just guessing directories, it scrapes the HTML of valid pages for internal links, recursively fuzzing the context of those new paths up to a specified "hop" depth.
 * **Sitemap & Robots.txt Extraction:** It pulls `robots.txt` rules (specifically logging `Disallow` paths as sensitive targets) and recursively parses nested `<sitemapindex>` XML files to extract unlinked, hidden application endpoints.
 
