@@ -119,7 +119,7 @@ TrufflePigg is built with a "Privacy-First" mindset for the operator. It employs
 
 ## Prerequisites & Installation
 
-TrufflePigg relies on several Node.js(obviously) for it to work, so see that it is installed.
+TrufflePigg relies on Node.js(obviously) for it to work, so see that it is installed.
 
 **Clone the repository:**
 ```bash
