@@ -14,7 +14,7 @@
   --hue: 120;
   --background-color: #FDD7E4;
   --font-color: #006B3C;
-  --link-color: hsl(220 100% 50%);
+  --link-color: hsl(220, 100%, 15%);
   --link-color-visited: purple;
   --alert-color: hsl(0 100% 40%);
 }
