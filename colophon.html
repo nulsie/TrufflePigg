@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrufflePigg</title>
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="alternate" type="application/feed+json" title="TrufflePigg Feed" href="feed.json" />
+  </head>
+  <body>
+    <header>
+      <a href="#content" id="skip-to-content">Skip to content</a>
+      <p id="quote">Maintained by <a href="https://nulsie.mywire.org">nulsie</a></p>
+
+      <nav>
+        <span>
+          <a href="index.html">Home</a>
+          <a href="search.html">Search</a>
+          <a href="wiki.html">Wiki</a>
+        </span>
+        <span>
+          <a href="https://news.ycombinator.com/user?id=tpannouncement" rel="me">HackerNews</a>
+          <a href="feed.hyml">HYML</a
+          >
+          <a href="#more-socials">More</a>
+        </span>
+      </nav>
+    </header>
+ <main id="content" class="h-entry">
+  <h1 class="p-name">Colophon</h1>
+
+  
+
+  <div class="e-content">
+    <p>TrufflePigg is built with Node.js, and is built to be compatible with version 18 'Hydrogen' or higher, it uses external dependancies such as  <code>p-limit</code> which is for the limiting of the number of processes or requests happening at once. It uses <code>cheerio</code> for effective parsing of HTML responses and extracting <code>script</code> tags for secret hunting, <code>a</code> tags for the Breadcrumb crawl and various DOM elements. It uses <code>socks</code> and <code>socks-proxy-agent</code> for routing the user's requests through Tor.</p>
+<p>It's built using the CommonJS format, ensuring universal compatibility with Node deployments without pre-compilation or build set-up.</p>
+<p>It then uses the native Node modules such as:</p>
+<ul>
+  <li>node:readline</li>
+  <li>node:fs</li>
+  <li>node:net</li>
+  <li>node:tls</li>
+  <li>node:dgram</li>
+  <li>node:dns</li>
+  <li>node:http</li>
+  <li>node:https</li>
+  <li>node:http2</li>
+</ul>
+  </div>
+</main>    
+    <footer>
+      <p>
+        
+        <a href="colophon.html">Colophon</a>
+        <a href="ideas.html">Ideas</a>
+        <a href="uses.html">Uses</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="contact.html">Contact</a>
+
+      </p>
+      <p id="more-socials">
+        <a href="https://github.com/nulsie/TrufflePigg" rel="me">GitHub</a>
+        <a href="https://codeberg.org/nulsie/TrufflePigg" rel="me">Codeberg</a>
+        <a href="https://github.com/nulsie/TrufflePigg/pkgs/npm/trufflepigg" rel="me">npm</a>
+        
+      </p>
+     Un©opyrighted by nulsie. This website is all public domain<br>
+     licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en">CC0 1.0</a><br>
+
+      <details>
+        <summary>Important Notes on the site</summary>
+the theme and structure of this site was heavily borrowed from the older version of <a href="https://jak2k.eu">Jak2k's</a> awsome site, because i really liked the simplicity of it, and found it a perfect match for this documentation.
+       </details>
+     </footer>
+  </body>
+</html>

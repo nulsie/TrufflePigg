@@ -1,0 +1,411 @@
+ * {
+  box-sizing: border-box;
+}
+
+:root {
+  --font: sans-serif;
+  --content-width: 65ch;
+  --gap: 0.5rem;
+  --deco-border-style: dashed;
+  --deco-border-thickness: 1px;
+  --empty-spacer: 2rem;
+  accent-color: green;
+
+  --hue: 120;
+  --background-color: #FDD7E4;
+  --font-color: #006B3C;
+  --link-color: hsl(220 100% 50%);
+  --link-color-visited: purple;
+  --alert-color: hsl(0 100% 40%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #11050B;
+    --font-color: white;
+    --link-color: hsl(220 100% 65%);
+    --link-color-visited: hsl(220 100% 85%);
+    --alert-color: hsl(0 100% 50%);
+  }
+}
+
+html {
+  font-family: var(--font);
+  color: var(--font-color);
+  background: var(--background-color);
+}
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%; /* Prevents the image from overflowing on mobile */
+  height: auto;
+}
+/* limit content width to a comfortable reading width */
+nav,
+main,
+aside,
+footer,
+#quote {
+  max-width: var(--content-width);
+  margin: 0 auto;
+}
+
+#quote {
+  margin-bottom: var(--gap);
+  padding-block: var(--gap);
+  color: var(--alert-color);
+  border-bottom: var(--deco-border-thickness) var(--deco-border-style) var(--alert-color);
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--empty-spacer);
+  border-bottom: var(--deco-border-thickness) var(--deco-border-style);
+  padding-bottom: var(--gap);
+}
+
+.e-content {
+  /* make longer text easier to read */
+  line-height: calc(1ex / 0.32);
+  text-align: left;
+  text-underline-position: under;
+  text-decoration-thickness: 2px;
+}
+
+.writing {
+  font-family: serif;
+
+  & .e-content :first-child::first-letter {
+    font-size: 3.5em;
+    float: left;
+    margin: 0.25rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Skip to content (inspired by: https://css-tricks.com/how-to-create-a-skip-to-content-link/) */
+#skip-to-content {
+  top: 0;
+  left: 0;
+  position: absolute;
+  transform: translateY(-100%);
+  transition: transform 0.3s;
+  background-color: var(--background-color);
+}
+
+#skip-to-content:focus {
+  transform: translateY(0%);
+}
+
+footer {
+  text-align: center;
+}
+
+li {
+  margin-bottom: var(--gap);
+}
+
+.comment {
+  padding-left: var(--gap);
+  margin: var(--gap);
+  border-left: 1px solid;
+}
+
+pre {
+  padding: var(--gap);
+  overflow-x: scroll;
+  text-wrap: stable;
+}
+
+a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  transition: text-underline-offset 0.2s ease-in-out;
+  color: var(--link-color);
+}
+
+a:visited {
+  color: var(--link-color-visited);
+}
+
+a:hover {
+  text-underline-offset: 0.5em;
+}
+
+body[data-rss=""] {
+  width: max-content;
+  margin: auto;
+}
+
+body[data-rss=""]>ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+
+  list-style-type: none;
+  padding: 0;
+}
+
+footer,
+aside#forum {
+  border-top: var(--deco-border-thickness) var(--deco-border-style);
+}
+
+footer>p>a+a {
+  margin: var(--gap);
+}
+
+footer * {
+  line-height: 2;
+}
+
+nav#breadcrumb {
+  margin-bottom: var(--gap);
+  justify-content: start;
+  gap: var(--gap);
+
+  & a {
+    text-decoration: none;
+  }
+
+  & :not(:first-child):before {
+    content: ">";
+    margin-right: var(--gap);
+  }
+}
+ /* Responsive wrapper */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 2rem 0;
+}
+
+/* The Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Headers */
+th {
+  font-weight: 700;
+  padding: 0.75rem;
+  border-bottom: 2px solid currentColor;
+}
+
+/* Data Cells */
+td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+/* Zebra striping (Optional, but fits the retro terminal feel) */
+tbody tr:nth-child(even) {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+/* Hover effect for readability */
+tbody tr:hover {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+ /* ==========================================================================
+   TrufflePigg Project Status Component 
+   ========================================================================== */
+
+.status-card {
+  margin: calc(var(--gap) * 4) 0;
+  padding: calc(var(--gap) * 3);
+  background: rgba(0, 0, 0, 0.05);
+  border: var(--deco-border-thickness) var(--deco-border-style) var(--font-color);
+  border-radius: 0;
+  max-width: var(--content-width);
+}
+
+@media (prefers-color-scheme: dark) {
+  .status-card {
+    background: rgba(255, 255, 255, 0.03);
+  }
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--deco-border-thickness) var(--deco-border-style) var(--font-color);
+  padding-bottom: calc(var(--gap) * 2);
+  margin-bottom: calc(var(--gap) * 2);
+}
+
+.status-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: calc(var(--gap) / 2);
+}
+
+.status-version {
+  margin: 0;
+  font-family: monospace;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+/* Content Groups */
+.status-body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--gap) * 2.5);
+}
+
+.status-group p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.status-message {
+  padding: var(--gap);
+  background: rgba(0, 0, 0, 0.1);
+  border-left: calc(var(--deco-border-thickness) * 2) solid var(--font-color);
+  border-radius: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .status-message {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Footer Metrics */
+.status-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: calc(var(--gap) * 3);
+  padding-top: var(--gap);
+  border-top: var(--deco-border-thickness) var(--deco-border-style) var(--font-color);
+  font-size: 0.7rem;
+  font-family: monospace;
+}
+/* Target the container element */
+.badge-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;       /* Allows badges to wrap neatly on mobile devices */
+  gap: 0.5rem;          /* Even spacing between badges */
+  align-items: center;  /* Aligns badges vertically in the center */
+  margin: 1rem 0;       /* Adds some space above and below the grid */
+}
+
+/* Ensure the images inside don't break the layout */
+.badge-grid a img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Clearfix helper to prevent text layout leakage below the section */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.terminal-container {
+  background: #000;
+  margin: 1rem 0;
+  color: #fff;
+  /* Enforce landscape proportions */
+  width: 100%;
+  min-width: 600px; /* Guarantees landscape layout math on small mobile screens */
+  aspect-ratio: 16 / 9; /* Strict ratio bounding box */
+  
+  /* Layout constraints */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Keeps the outer container crisp */
+}
+ @media (max-width: 650px) {
+  /* Wrap the container in an overflow handler if your main content width is restrictive */
+  main {
+    overflow-x: visible; 
+  }
+  .terminal-container {
+    overflow-x: auto; /* Allows users to swipe the landscape box left/right on tiny screens */
+  }
+}
+.terminal-container pre {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+ /* ==========================================================================
+   Custom Site-Scraper Search Styling
+   ========================================================================== */
+
+.custom-search-container {
+  margin-top: calc(var(--gap) * 4);
+  width: 100%;
+}
+
+#search-input {
+  width: 100%;
+  padding: calc(var(--gap) * 1.5);
+  font-size: 1.1rem;
+  font-family: var(--font);
+  color: var(--font-color);
+  background: rgba(128, 128, 128, 0.08);
+  border: var(--deco-border-thickness) var(--deco-border-style) var(--font-color);
+  outline: none;
+}
+
+#search-input:focus {
+  border-style: solid;
+  background: rgba(128, 128, 128, 0.15);
+}
+
+#search-status {
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-top: var(--gap);
+  color: var(--font-color);
+  opacity: 0.8;
+}
+
+#search-results {
+  margin-top: calc(var(--gap) * 4);
+}
+
+.search-result-item {
+  margin-bottom: calc(var(--gap) * 4);
+  padding-bottom: calc(var(--gap) * 2);
+  border-bottom: 1px rgba(128, 128, 128, 0.2) solid;
+}
+
+.search-result-item h3 {
+  margin: 0 0 var(--gap) 0;
+}
+
+.search-result-item h3 a {
+  text-decoration: none;
+}
+
+.search-result-item h3 a:hover {
+  text-decoration: underline;
+}
+
+.search-result-item .snippet {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+.no-results {
+  font-style: italic;
+  opacity: 0.7;
+}

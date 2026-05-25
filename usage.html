@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrufflePigg</title>
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="alternate" type="application/feed+json" title="TrufflePigg Feed" href="feed.json" />
+  </head>
+  <body>
+    <header>
+      <a href="#content" id="skip-to-content">Skip to content</a>
+      <p id="quote">Maintained by <a href="https://nulsie.mywire.org">nulsie</a></p>
+
+      <nav>
+        <span>
+          <a href="index.html">Home</a>
+          <a href="search.html">Search</a>
+          <a href="wiki.html">Wiki</a>
+        </span>
+        <span>
+          <a href="https://news.ycombinator.com/user?id=tpannouncement" rel="me">HackerNews</a>
+          <a href="feed.hyml">HYML</a
+          >
+          <a href="#more-socials">More</a>
+        </span>
+      </nav>
+    </header>
+    <main id="content" class="h-entry">
+  <div class="terminal-container">
+  <pre>     __,---.__
+  ,-'         `-.__
+&/           `._\ _\
+ /               ''._
+ |   ,             (") -snorts-
+ |__,'`-..--|__|--''    
+                          (-)
+                            (+)
+  
+  --.--          ,---.,---.|         
+    |  ,---..   .|__. |__. |    ,---.
+    |  |    |   ||    |    |    |---'
+    `  `    `---'`    `    `---'`---'
+    ,---.o
+    |---'.,---.,---.  
+    |    ||   ||   |
+    `    ``---|`---|
+          `---'`---'
+  
+   Version 1.0 (Modularized) - Ready for sniffing...
+
+================================================
+
+Enter target (or "exit" to quit, "guide" for help): example.com
+
+========================================
+[*] TARGET: example.com
+========================================
+
+--- [ WHOIS ENRICHMENT ] ---
+  [+] Organization: Example Inc.
+  [+] Created On  : 1995-08-14T04:00:00Z
+  [+] Nameservers : a.iana-servers.net, b.iana-servers.net
+  [+] Source: RDAP
+
+--- [ DNS INTELLIGENCE ] ---
+  [+] No Wildcard DNS detected. Precision mode: High.
+
+[*] Scanning DNS TXT Records for SaaS Fingerprints...
+  [!] IDENTIFIED SaaS: Google Workspace
+      └─ Record: google-site-verification=abc123xyz
+  [+] TXT Record: v=spf1 include:_spf.google.com ~all
+
+[*] Checking for AXFR (Zone Transfer) Vulnerabilities...
+  [*] Attempting AXFR on: a.iana-servers.net...
+      [-] TCP Port 53 closed on a.iana-servers.net. AXFR unlikely.
+  [*] Attempting AXFR on: b.iana-servers.net...
+      [-] TCP Port 53 closed on b.iana-servers.net. AXFR unlikely.
+[*] Resolving domain...
+  [+] Resolved via A Record: 93.184.216.34
+
+[*] Querying Passive Sources Concurrently...
+  [+] Found: www.example.com
+  [+] Found: dev.example.com
+
+[*] Checking 2 subdomains for takeover vulnerabilities...
+  [-] No vulnerable CNAME configurations detected.
+
+[*] Checking Mail Configuration...
+  [+] MX Records:
+      - aspmx.l.google.com (Priority: 1)
+      - alt1.aspmx.l.google.com (Priority: 5)
+  [+] SPF Record: v=spf1 include:_spf.google.com ~all...
+  [+] DMARC: Configured
+
+[*] Fetching Geo/ISP...
+  [+] Location: Norwell, United States (US)
+  [+] ISP:      EdgeCast Networks, Inc.
+  [+] ASN:      AS15133
+
+[*] Scanning 17 Ports...
+
+[*] Running Heuristic Analysis...
+  [+] No obvious honeypot signatures found.
+  [+] Port 80    open -> Web Server (v: Unknown)
+  [+] Port 443   open -> Web Server (v: Unknown)
+
+[*] Checking for known vulnerabilities (CVEs)...
+  [-] Port 80: Insufficient version data (Web Server v: Unknown), skipping.
+  [-] Port 443: Insufficient version data (Web Server v: Unknown), skipping.
+
+[*] Analyzing HTTP Security Headers...
+  [+] Port 80 Header Config:
+      [-] Strict-Transport-Security: MISSING
+      [-] Content-Security-Policy: MISSING
+      [-] X-Frame-Options: MISSING
+      [-] X-Content-Type-Options: MISSING
+
+      [*] TLS/SSL Certificate Intel:
+          [+] Issuer:     DigiCert Inc
+          [+] Expires:    Oct 25 23:59:59 2024 GMT
+          [+] SAN:        www.example.com, example.com
+      [*] Detected Technologies: None identified
+
+      [*] Executing Advanced Discovery (Robots/Sitemaps) on Port 80...
+          [+] robots.txt FOUND! (125 bytes)
+          [?] Do you want to save this robots.txt to a file? (y/n): n
+          [*] Skipped saving file.
+
+          [*] Parsing Sitemaps...
+          [!] SUCCESS: Extracted 15 unique URLs from sitemaps.
+              -> Found 2 potentially sensitive URLs in sitemap:
+                 └─ http://example.com/admin-login
+                 └─ http://example.com/api/v1/users
+
+      [*] Fuzzing Port 80 with concurrency limit...
+          [*] Establishing Triple-Probe Baseline for /...
+          [+] Baseline established. Avg Length: 1256 | Stability: 100.00%
+          [+] PROTECTED: admin/                    (403 Forbidden)
+          [!] EXPOSED:   .env                      (200 OK)
+
+          [*] Recursing into directory: /admin/
+          [*] Establishing Triple-Probe Baseline for /admin/...
+          [+] Baseline established. Avg Length: 404 | Stability: 100.00%
+          [!] Found 1 exposed files. (Interactive mode disabled)
+
+
+      [*] Crawling client-side JS for secrets on Port 80...
+          [!] Secrets discovered in: http://example.com/js/app.js
+              -> [Google API Key]: AIzaSyB_1234567890abcdefghijklmnopqrst (Entropy: 4.15)
+          [*] Scan complete: 1 sensitive items identified.
+
+      [*] Executing Shadow-Trust Dependency Analysis on Port 80...
+          [*] Discovered 2 unique external dependencies. Hunting for broken links...
+          [!!!] CRITICAL SHADOW-TRUST ALERT: Abandoned Dependency Found!
+                └─ Dead Host: abandoned-tracker-domain.com
+          [*] Shadow-Trust Analysis complete.
+      [*] Breadcrumb Crawling is disabled. Use --breadcrumb to enable.
+========================================
+
+[?] Scan complete. Download full report to .txt? (y/n):
+  </pre>
+</div>
+<p>how a usual scan looks like</p>
+  <h1 class="p-name">Usage</h1>
+
+  
+
+  <div class="e-content">
+    <p>Running the tool without arguments will execute a default scan using the built-in toolsets and settings.</p>
+    <pre>trufflepigg</pre>
+    <p><i>(When prompted, enter your target domain).</i></p>
+    <h2>Command Line Arguments</h2>
+    <div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Argument</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>--guide, -h</td>
+        <td>Display the help guide (what else do you think it'll do?).</td>
+      </tr>
+      <tr>
+        <td>--mode [web, infra, both]</td>
+        <td>Set the scan mode. (Default: web).</td>
+      </tr>
+            <tr>
+        <td>--ports [p1,p2,...]</td>
+        <td>Specify custom ports to scan (e.g., --ports 80,443,8080).</td>
+      </tr>
+            <tr>
+        <td>--breadcrumb</td>
+        <td>Enable breadcrumb crawling to discover and analyze internal links.</td>
+      </tr>
+            <tr>
+        <td>--hops [num]</td>
+        <td>Set the maximum depth for breadcrumb crawling. (Default: 3).</td>
+      </tr>
+           <tr>
+<td>--protate</td>
+<td>Enable automatic proxy rotation via ProxyScrape.</td>
+</tr>
+<tr>
+<td>--tor [url]</td>
+<td>Enable Tor routing. Defaults to socks5h://127.0.0.1:9050 if no URL is provided.</td>
+</tr>
+<tr>
+<td>--fuzzlist [path]</td>
+<td>Load a custom wordlist for directory fuzzing.</td>
+</tr>
+<tr>
+<td>--concurrency [num]</td>
+<td>Set maximum concurrent tasks to avoid dropping connections. (Default: 10).</td>
+</tr>
+<tr>
+<td>--depth [num]</td>
+<td>Set web directory fuzzing recursion depth. (Default: 2).</td>
+</tr>
+<tr>
+<td>--sleep [min,max]</td>
+<td>Set a random delay range in ms between requests (e.g., --sleep 100,500).</td>
+</tr>
+<tr>
+<td>--signatures [path]</td>
+<td>Load a custom JSON file for technology detection signatures.</td>
+</tr>
+    </tbody>
+  </table>
+</div>
+<h2>Examples</h2>
+<ol>
+  <li>The "I want everything" Scan:</li>
+  <pre>./TrufflePigg.js --mode both --breadcrumb --concurrency 20
+</pre>
+<li>The Stealth Scan (Tor + High Sleep):</li>
+<pre>./TrufflePigg.js --tor --sleep 500,1500 --depth 1
+</pre>
+<li>Targeted Infrastructure Scan:</li>
+<pre>./TrufflePigg.js --mode infra --ports 21,22,25,445,3306,6379
+</pre>
+</ol>
+  </div>
+</main>
+    <footer>
+      <p>
+        
+        <a href="colophon.html">Colophon</a>
+        <a href="ideas.html">Ideas</a>
+        <a href="uses.html">Uses</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="contact.html">Contact</a>
+
+      </p>
+      <p id="more-socials">
+        <a href="https://github.com/nulsie/TrufflePigg" rel="me">GitHub</a>
+        <a href="https://codeberg.org/nulsie/TrufflePigg" rel="me">Codeberg</a>
+        <a href="https://github.com/nulsie/TrufflePigg/pkgs/npm/trufflepigg" rel="me">npm</a>
+        
+      </p>
+     Un©opyrighted by nulsie. This website is all public domain<br>
+     licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en">CC0 1.0</a><br>
+
+      <details>
+        <summary>Important Notes on the site</summary>
+the theme and structure of this site was heavily borrowed from the older version of <a href="https://jak2k.eu">Jak2k's</a> awsome site, because i really liked the simplicity of it, and found it a perfect match for this documentation.
+       </details>
+     </footer>
+  </body>
+</html>

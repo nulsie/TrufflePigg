@@ -1,0 +1,147 @@
+ <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrufflePigg</title>
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="alternate" type="application/feed+json" title="TrufflePigg Feed" href="feed.json" />
+  </head>
+  <body>
+    <header>
+      <a href="#content" id="skip-to-content">Skip to content</a>
+      <p id="quote">Maintained by <a href="https://nulsie.mywire.org">nulsie</a></p>
+
+      <nav>
+        <span>
+          <a href="index.html">Home</a>
+          <a href="search.html">Search</a>
+          <a href="wiki.html">Wiki</a>
+        </span>
+        <span>
+          <a href="https://news.ycombinator.com/user?id=tpannouncement" rel="me">HackerNews</a>
+          <a href="feed.hyml">HYML</a
+          >
+          <a href="#more-socials">More</a>
+        </span>
+      </nav>
+    </header>
+    <main id="content" class="h-entry">
+  <h1 class="p-name">Features</h1>
+
+  
+
+  <div class="e-content">
+    <ul>
+      <li><b>HTTP/2 Multiplexing & SOCKS5 Support:</b> By utilizing the <code>node:http2</code> and <code>node:tls</code> libraries, it forces HTTP/2 connections, which many legacy WAFs struggle to parse deeply. It integrates <code>socks-proxy-agent</code> and natively supports Tor routing.</li>
+      <li><b>WAF Header Spoofing:</b> It dynamically injects headers (<code>X-Forwarded-For</code>, <code>True-Client-IP</code>, etc.) spoofing internal or local IP addresses (e.g., <code>127.0.0.1</code>, <code>10.0.0.1</code>) to bypass poorly configured IP-based rate limiting.</li>
+      <li><b>Packet Fragmentation (Stealth Write):</b> Rather than sending a standard protocol payload all at once, the <code>stealthWrite</code> function chunks byte payloads (e.g., SMB or DB probes) into tiny pieces (8 bytes) with micro-delays (50ms). This fragments the payload across multiple TCP packets, breaking basic IDS signature matching.</li>
+      <pre>async function stealthWrite(socket, buffer, chunkSize = 8, delay = 50) {
+ socket.setNoDelay(true); 
+ for (let i = 0; i < buffer.length; i += chunkSize) {
+   const chunk = buffer.subarray(i, i + chunkSize);
+   socket.write(chunk); // Send tiny fragments
+   if (i + chunkSize < buffer.length) {
+     await new Promise(r => setTimeout(r, delay)); // Micro-sleep between packets
+   }
+ }
+}
+</pre>
+ <li><b>Browser Fingerprint Randomization:</b> It rotates between Windows/Chrome, Linux/Edge, and Android/Chrome User-Agents, injecting complete <code>Sec-CH-UA</code> client hint headers to appear as legitimate browser traffic.</li>
+
+<li><b>Protocol-Specific Probes:</b> It uses hardcoded byte arrays to trigger responses from specific databases (PostgreSQL, MongoDB, MSSQL) and SMB services.</li>
+
+<li><b>Vulnerability Verification:</b> * Checks FTP (Port 21) for Anonymous login allowances.</li>
+
+<li>Checks Redis (Port 6379) for unauthenticated public access.</li>
+
+<li>Checks SMTP (Ports 25/587) for Open Mail Relay vulnerabilities.</li>
+
+<li><b>Automated CVE Lookup:</b> Once a service banner and version are identified (e.g., <code>Apache 2.4.49</code>), it automatically queries the NIST NVD API to fetch known CVEs and CVSS scores for that exact version.</li>
+
+<li><b>Honeypot Detection:</b> It implements an <code>analyzeForHoneypot</code> heuristic. If it detects an unusually high port density (>12 open ports), duplicate banner signatures across random ports, or known honeypot strings (like <code>cowrie</code> or <code>dionaea</code>), it flags the target as a potential trap.</li>
+
+<li><b>Triple-Probe Baseline Fuzzing:</b> Before fuzzing a directory, it requests three randomized, non-existent paths (e.g., <code>probe_123xyz.html</code>). It calculates the average byte length and the structural similarity between these 404/Catch-All pages. When fuzzing real targets, it compares the response against this baseline. If the structural similarity matches the baseline, it discards the result as a false positive.</li>
+<pre>async function getBaseline(host, port, basePath, protocol) {
+ const probes = [];
+ // Send 3 random requests to establish what a "Not Found" page looks like
+ for (let i = 0; i < 3; i++) {
+   const randomStr = Math.random().toString(36).substring(2, 15);
+   const url = `${protocol}://${host}:${port}${basePath}probe_${randomStr}.html`;
+   const body = await fetchText(url);
+   probes.push({ body: body || "", length: body ? body.length : 0 });
+ }
+
+ // Calculate similarity between the false responses to establish a baseline threshold
+ const stability = getSimilarity(probes[0].body, probes[1].body);
+ return { avgLength, stability, sampleBody: probes[0].body };
+}
+</pre>
+ <li><b>Sensitive File Extraction:</b> If the tool finds sensitive files like .env or config.php exposed, it will facilitate the extraction of these files to the user's machine if the user gives consent.</li>
+<li><b>Breadcrumb Crawling:</b> Instead of just guessing directories, it scrapes the HTML of valid pages for internal links, recursively fuzzing the context of those new paths up to a specified "hop" depth.</li>
+
+<li><b>Sitemap & Robots.txt Extraction:</b> It pulls <code>robots.txt</code> rules (specifically logging <code>Disallow</code> paths as sensitive targets) and recursively parses nested <sitemapindex> XML files to extract unlinked, hidden application endpoints.</li>
+
+<li><b>Passive Subdomain Gathering:</b> It queries external sources to find subdomains without sending a single packet to the target infrastructure.</li>
+
+<li><b>Subdomain Takeover Detection:</b> It checks CNAME records of discovered subdomains against a hardcoded list of <code>TAKEOVER_FINGERPRINTS</code> (AWS S3, GitHub Pages, Heroku, Shopify). If a matching CNAME is found, it visits the page to look for specific "Not Found" signatures, confirming a highly critical takeover vulnerability.</li>
+
+<li><b>SaaS Fingerprinting via DNS:</b> It parses DNS TXT records to identify third-party SaaS integrations (e.g., Google Workspace, Atlassian, Stripe, DocuSign) based on domain verification strings.</li>
+
+<li><b>Client-Side Secret Scraping via Entropy:</b> It crawls all imported <code>.js</code> files and runs regex patterns for API keys (AWS, Google, Stripe). To prevent false positives, it runs a <b>Shannon</b> Entropy calculation on the matched strings. High-entropy strings are flagged as genuine secrets, while low-entropy strings (e.g., <code>placeholder_key_xxxx</code>) are discarded based on contextual keywords.</li>
+<pre>function calculateShannonEntropy(str) {
+ if (!str || str.length === 0) return 0;
+ const charCounts = {};
+ for (let i = 0; i < str.length; i++) {
+   charCounts[str[i]] = (charCounts[str[i]] || 0) + 1;
+ }
+ let entropy = 0;
+ const len = str.length;
+ for (const char in charCounts) {
+   const p = charCounts[char] / len;
+   entropy -= p * Math.log2(p); // Shannon entropy formula
+ }
+ return entropy;
+}
+</pre>
+<li>Shadow-Trust Dependency Analysis: This is a standout feature. It parses the DOM for all external dependencies (<code>script src="..."</code>, stylesheets, iframes). It then performs DNS lookups on those external domains. If an external domain returns <code>NXDOMAIN</code> (dead host), it flags a Critical Shadow-Trust Alert, indicating the target is loading code from an expired domain that an attacker could register to achieve Stored XSS. It also checks for orphaned S3 buckets used as dependencies.</li>
+<pre>// Inside analyzeShadowTrust()
+const isDead = await checkHostAvailability(hostname);
+
+if (isDead) {
+  log(`          [!!!] CRITICAL SHADOW-TRUST ALERT: Abandoned Dependency Found!`);
+  log(`                └─ Dead Host: ${hostname}`);
+  const refs = rawReferences.filter(r => r.source.includes(hostname));
+  refs.slice(0, 2).forEach(r => log(`                └─ Injected via: <${r.tag}> ${r.source}`));
+}
+</pre>
+    </ul>
+  </div>
+</main>
+    <footer>
+      <p>
+        
+        <a href="colophon.html">Colophon</a>
+        <a href="ideas.html">Ideas</a>
+        <a href="uses.html">Uses</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="contact.html">Contact</a>
+
+      </p>
+      <p id="more-socials">
+        <a href="https://github.com/nulsie/TrufflePigg" rel="me">GitHub</a>
+        <a href="https://codeberg.org/nulsie/TrufflePigg" rel="me">Codeberg</a>
+        <a href="https://github.com/nulsie/TrufflePigg/pkgs/npm/trufflepigg" rel="me">npm</a>
+        
+      </p>
+     Un©opyrighted by nulsie. This website is all public domain<br>
+     licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en">CC0 1.0</a><br>
+
+      <details>
+        <summary>Important Notes on the site</summary>
+the theme and structure of this site was heavily borrowed from the older version of <a href="https://jak2k.eu">Jak2k's</a> awsome site, because i really liked the simplicity of it, and found it a perfect match for this documentation.
+       </details>
+     </footer>
+  </body>
+</html>

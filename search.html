@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrufflePigg</title>
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="alternate" type="application/feed+json" title="TrufflePigg Feed" href="feed.json" />
+  </head>
+  <body>
+    <header>
+      <a href="#content" id="skip-to-content">Skip to content</a>
+      <p id="quote">Maintained by <a href="https://nulsie.mywire.org">nulsie</a></p>
+
+      <nav>
+        <span>
+          <a href="index.html">Home</a>
+          <a href="search.html">Search</a>
+          <a href="wiki.html">Wiki</a>
+        </span>
+        <span>
+          <a href="https://news.ycombinator.com/user?id=tpannouncement" rel="me">HackerNews</a>
+          <a href="feed.hyml">HYML</a
+          >
+          <a href="#more-socials">More</a>
+        </span>
+      </nav>
+    </header>
+    <main id="content">
+  <h1>Search</h1>
+  <noscript>
+    <p>This website requires JavaScript to use the local site search functionality.</p>
+  </noscript>
+
+  <div class="custom-search-container">
+    <input type="search" id="search-input" placeholder="Initializing search engine..." disabled autocomplete="off" />
+    <p id="search-status">Gathering site content...</p>
+    <div id="search-results"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const searchInput = document.getElementById("search-input");
+      const searchStatus = document.getElementById("search-status");
+      const searchResults = document.getElementById("search-results");
+
+      // The list of internal relative pages your custom engine will scrape
+      const pagesToScrape = [
+        "overview.html",
+        "features.html",
+        "anonymity.html",
+        "p&e.html",
+        "usage.html",
+        "disclaimer.html",
+        "license.html",
+        "status.html", 
+        "wiki.html",
+        "colophon.html", 
+        "privacy.html", 
+        "contact.html", 
+        "ideas.html", 
+        "index.html"
+      ];
+
+      let searchIndex = [];
+
+      // Scrapes pages dynamically using fetch and DOMParser
+      async function initializeSearchEngine() {
+        let loadedCount = 0;
+
+        for (const url of pagesToScrape) {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) continue;
+            
+            const htmlText = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, "text/html");
+
+            // Strip out non-content elements to ensure clean matching
+            doc.querySelectorAll("script, style, nav, footer, aside, #skip-to-content, .hidden").forEach(el => el.remove());
+
+            // Extract text metrics
+            const title = doc.querySelector("title")?.textContent || doc.querySelector("h1")?.textContent || url;
+            const mainContent = doc.querySelector("main")?.textContent || doc.body.textContent;
+            const cleanContent = mainContent.replace(/\s+/g, " ").trim();
+
+            searchIndex.push({
+              url: url,
+              title: title.replace(" – TrufflePigg", "").trim(),
+              content: cleanContent
+            });
+            
+            loadedCount++;
+          } catch (error) {
+            console.error(`Error scraping ${url}:`, error);
+          }
+        }
+
+        if (searchIndex.length > 0) {
+          searchStatus.textContent = "";
+          searchInput.disabled = false;
+          searchInput.placeholder = "Search TrufflePigg documentation...";
+          searchInput.focus();
+        } else {
+          searchStatus.textContent = "Failed to index site content.";
+        }
+      }
+
+      // Live multi-term execution logic
+      function executeSearch(query) {
+        searchResults.innerHTML = "";
+        const cleanQuery = query.trim().toLowerCase();
+
+        if (!cleanQuery) return;
+
+        const terms = cleanQuery.split(/\s+/);
+        
+        // Filter elements matching ALL entered terms
+        const matchedPages = searchIndex.filter(page => {
+          return terms.every(term => 
+            page.title.toLowerCase().includes(term) || 
+            page.content.toLowerCase().includes(term)
+          );
+        });
+
+        if (matchedPages.length === 0) {
+          searchResults.innerHTML = '<p class="no-results">No matches found.</p>';
+          return;
+        }
+
+        // Render matching item snippets
+        matchedPages.forEach(match => {
+          const item = document.createElement("div");
+          item.className = "search-result-item";
+
+          // Calculate contextual snippet preview near first matched keyword
+          let snippet = "";
+          const lowerContent = match.content.toLowerCase();
+          const matchIdx = lowerContent.indexOf(terms[0]);
+
+          if (matchIdx !== -1) {
+            const start = Math.max(0, matchIdx - 50);
+            const end = Math.min(match.content.length, matchIdx + 120);
+            snippet = (start > 0 ? "..." : "") + match.content.substring(start, end) + (end < match.content.length ? "..." : "");
+          } else {
+            snippet = match.content.substring(0, 150) + "...";
+          }
+
+          item.innerHTML = `
+            <h3><a href="${match.url}">${escapeHTML(match.title)}</a></h3>
+            <p class="snippet">${escapeHTML(snippet)}</p>
+          `;
+          searchResults.appendChild(item);
+        });
+      }
+
+      function escapeHTML(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+
+      searchInput.addEventListener("input", (e) => executeSearch(e.target.value));
+      initializeSearchEngine();
+    });
+  </script>
+</main>
+    <footer>
+      <p>
+        
+        <a href="colophon.html">Colophon</a>
+        <a href="ideas.html">Ideas</a>
+        <a href="uses.html">Uses</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="contact.html">Contact</a>
+
+      </p>
+      <p id="more-socials">
+        <a href="https://github.com/nulsie/TrufflePigg" rel="me">GitHub</a>
+        <a href="https://codeberg.org/nulsie/TrufflePigg" rel="me">Codeberg</a>
+        <a href="https://github.com/nulsie/TrufflePigg/pkgs/npm/trufflepigg" rel="me">npm</a>
+        
+      </p>
+     Un©opyrighted by nulsie. This website is all public domain<br>
+     licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en">CC0 1.0</a><br>
+
+      <details>
+        <summary>Important Notes on the site</summary>
+the theme and structure of this site was heavily borrowed from the older version of <a href="https://jak2k.eu">Jak2k's</a> awsome site, because i really liked the simplicity of it, and found it a perfect match for this documentation.
+       </details>
+     </footer>
+  </body>
+</html>
