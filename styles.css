@@ -16,7 +16,7 @@
   --font-color: #006B3C;
   --link-color: #0036A3;
   --link-color-visited: purple;
-  --alert-color: #660022;
+  --alert-color: hsl(0 100% 22%);
 }
 
 @media (prefers-color-scheme: dark) {
